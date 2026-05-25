@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="115" fill="url(#bg)"/>
+  <rect width="512" height="256" rx="115" fill="url(#shine)"/>
+
+  <!-- Shopping basket -->
+  <g transform="translate(256 280)" fill="#ffffff">
+    <!-- Handles -->
+    <path d="M-78 -52 L-50 -110 Q-44 -122 -30 -122 L30 -122 Q44 -122 50 -110 L78 -52"
+          stroke="#ffffff" stroke-width="18" stroke-linecap="round" fill="none"/>
+
+    <!-- Basket body -->
+    <path d="M-128 -52 L128 -52 L106 78 Q102 96 84 96 L-84 96 Q-102 96 -106 78 Z"
+          fill="#ffffff"/>
+
+    <!-- Vertical lines on basket -->
+    <line x1="-60" y1="-30" x2="-44" y2="74" stroke="#6366f1" stroke-width="6" stroke-linecap="round"/>
+    <line x1="0" y1="-30" x2="0" y2="74" stroke="#6366f1" stroke-width="6" stroke-linecap="round"/>
+    <line x1="60" y1="-30" x2="44" y2="74" stroke="#6366f1" stroke-width="6" stroke-linecap="round"/>
+
+    <!-- Horizontal line -->
+    <line x1="-115" y1="-20" x2="115" y2="-20" stroke="#6366f1" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>

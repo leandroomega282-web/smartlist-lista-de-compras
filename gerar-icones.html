@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerador de Ícones - SmartList</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f1f5fb 0%, #e0e7ff 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #0f172a;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
+        .preview-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .preview-card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #1e293b;
+        }
+
+        #preview {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 20px;
+            display: block;
+            border-radius: 32px;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .download-all {
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 8px;
+        }
+
+        .download-all:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(99, 102, 241, 0.5);
+        }
+
+        .download-all:active {
+            transform: translateY(0);
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 10px;
+        }
+
+        .sizes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .size-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px 16px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s;
+        }
+
+        .size-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .size-card canvas {
+            display: block;
+            margin: 0 auto 12px;
+            max-width: 96px;
+            max-height: 96px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .size-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 4px;
+        }
+
+        .size-purpose {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            min-height: 24px;
+        }
+
+        .download-btn {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        .download-btn:hover {
+            background: #6366f1;
+            color: white;
+            border-color: #6366f1;
+        }
+
+        .instructions {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .instructions h3 {
+            font-size: 1.1rem;
+            margin-bottom: 14px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instructions ol {
+            padding-left: 24px;
+            color: #475569;
+            line-height: 1.7;
+            font-size: 0.92rem;
+        }
+
+        .instructions ol li {
+            margin-bottom: 8px;
+        }
+
+        .instructions strong {
+            color: #6366f1;
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: #6366f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <header>
+            <h1>🎨 Gerador de Ícones</h1>
+            <p class="subtitle">Gere os ícones PNG do SmartList em todos os tamanhos necessários</p>
+        </header>
+
+        <div class="preview-card">
+            <h2>Pré-visualização</h2>
+            <img id="preview" src="icon.svg" alt="Ícone SmartList">
+            <button class="download-all" onclick="downloadAll()">
+                ⬇️  Baixar todos os ícones (PNG)
+            </button>
+            <p class="hint">Você vai baixar 8 arquivos PNG. Coloque todos na pasta do projeto.</p>
+        </div>
+
+        <div class="sizes-grid" id="sizesGrid"></div>
+
+        <div class="instructions">
+            <h3>📋 Como usar</h3>
+            <ol>
+                <li>Clique em <strong>"Baixar todos os ícones"</strong> acima (ou baixe individualmente).</li>
+                <li>Salve os arquivos PNG dentro da pasta do projeto: <br>
+                    <code>C:\Users\Leandro\Documents\Projeto lista de dispesa\</code>
+                </li>
+                <li>Pronto! O <code>manifest.json</code> e <code>index.html</code> já estão configurados para usar esses arquivos automaticamente.</li>
+                <li>Republique a pasta no <strong>Netlify</strong> arrastando ela novamente em <code>app.netlify.com/drop</code>.</li>
+            </ol>
+        </div>
+
+    </div>
+
+    <script>
+        const sizes = [
+            { size: 32,  name: 'favicon-32.png',     purpose: 'Favicon do navegador' },
+            { size: 48,  name: 'favicon-48.png',     purpose: 'Favicon HD' },
+            { size: 96,  name: 'icon-96.png',        purpose: 'Atalho Chrome' },
+            { size: 144, name: 'icon-144.png',       purpose: 'Tile Windows' },
+            { size: 180, name: 'apple-touch-icon.png', purpose: 'iPhone / iPad' },
+            { size: 192, name: 'icon-192.png',       purpose: 'Android (PWA)' },
+            { size: 384, name: 'icon-384.png',       purpose: 'Android grande' },
+            { size: 512, name: 'icon-512.png',       purpose: 'Splash screen' }
+        ];
+
+        const grid = document.getElementById('sizesGrid');
+
+        // Renderiza um card para cada tamanho
+        sizes.forEach((item) => {
+            const card = document.createElement('div');
+            card.className = 'size-card';
+            card.innerHTML = `
+                <canvas width="${item.size}" height="${item.size}" id="canvas-${item.size}"></canvas>
+                <div class="size-label">${item.size}×${item.size}</div>
+                <div class="size-purpose">${item.purpose}</div>
+                <button class="download-btn" onclick="downloadOne(${item.size}, '${item.name}')">
+                    Baixar PNG
+                </button>
+            `;
+            grid.appendChild(card);
+        });
+
+        // Carrega o SVG e renderiza em cada canvas
+        const svgImg = new Image();
+        svgImg.crossOrigin = 'anonymous';
+        svgImg.src = 'icon.svg';
+
+        svgImg.onload = () => {
+            sizes.forEach(item => {
+                const canvas = document.getElementById('canvas-' + item.size);
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, item.size, item.size);
+                ctx.drawImage(svgImg, 0, 0, item.size, item.size);
+            });
+        };
+
+        svgImg.onerror = () => {
+            alert('Erro ao carregar icon.svg. Verifique se o arquivo está na mesma pasta deste HTML.');
+        };
+
+        // Baixa um PNG específico
+        function downloadOne(size, filename) {
+            const canvas = document.getElementById('canvas-' + size);
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 'image/png');
+        }
+
+        // Baixa todos com pequeno delay entre eles
+        function downloadAll() {
+            sizes.forEach((item, idx) => {
+                setTimeout(() => {
+                    downloadOne(item.size, item.name);
+                }, idx * 250);
+            });
+        }
+    </script>
+</body>
+</html>

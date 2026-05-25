@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="SmartList — Lista de Compras Inteligente. Organize suas compras com categorias, preços, orçamento e muito mais.">
+    <meta name="theme-color" content="#6366f1">
+    <title>Lista de Compras Inteligente</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+    <!-- iOS -->
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SmartList">
+
+    <!-- Android / Windows -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileImage" content="icon-144.png">
+    <meta name="msapplication-TileColor" content="#6366f1">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.0/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+    <!-- ============ SIDEBAR ============ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fas fa-basket-shopping"></i>
+                </div>
+                <div class="brand-text">
+                    <h1>SmartList</h1>
+                    <span>Lista Inteligente</span>
+                </div>
+            </div>
+
+            <div class="sidebar-date">
+                <i class="far fa-calendar-days"></i>
+                <div>
+                    <small>Lista criada em</small>
+                    <span id="creationDate">—</span>
+                </div>
+            </div>
+
+            <div class="progress-card">
+                <div class="progress-card-header">
+                    <span>Progresso</span>
+                    <strong id="progressPercent">0%</strong>
+                </div>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+                <div class="progress-card-footer">
+                    <span id="progressDetail">0 de 0 comprados</span>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-mini stat-mini-primary">
+                    <i class="fas fa-list-ul"></i>
+                    <div>
+                        <strong data-counter id="totalItems">0</strong>
+                        <small>Itens</small>
+                    </div>
+                </div>
+                <div class="stat-mini stat-mini-success">
+                    <i class="fas fa-check"></i>
+                    <div>
+                        <strong data-counter id="purchasedItems">0</strong>
+                        <small>Comprados</small>
+                    </div>
+                </div>
+                <div class="stat-mini stat-mini-warning">
+                    <i class="far fa-clock"></i>
+                    <div>
+                        <strong data-counter id="pendingItems">0</strong>
+                        <small>Pendentes</small>
+                    </div>
+                </div>
+                <div class="stat-mini stat-mini-info">
+                    <i class="fas fa-tags"></i>
+                    <div>
+                        <strong data-counter id="totalCategories">0</strong>
+                        <small>Categorias</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="budget-card">
+                <div class="budget-header">
+                    <span><i class="fas fa-wallet"></i> Orçamento</span>
+                    <button id="setBudget" class="link-btn" title="Definir orçamento">Editar</button>
+                </div>
+                <div class="budget-body">
+                    <div class="budget-row">
+                        <span>Gasto</span>
+                        <strong id="budgetSpent">R$ 0,00</strong>
+                    </div>
+                    <div class="budget-row">
+                        <span>Limite</span>
+                        <strong id="budgetLimit">—</strong>
+                    </div>
+                    <div class="budget-bar">
+                        <div id="budgetBarFill" class="budget-bar-fill"></div>
+                    </div>
+                    <small id="budgetMessage" class="budget-message">Defina um limite para acompanhar.</small>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <span><i class="fas fa-chart-pie"></i> Por categoria</span>
+                </div>
+                <div id="categoryChart" class="chart-body">
+                    <div class="chart-empty">Sem dados ainda</div>
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <button id="themeToggle" class="sidebar-btn" title="Alternar tema (T)">
+                    <i class="fas fa-moon"></i>
+                    <span>Tema</span>
+                </button>
+                <button id="showShortcuts" class="sidebar-btn" title="Atalhos (?)">
+                    <i class="fas fa-keyboard"></i>
+                    <span>Atalhos</span>
+                </button>
+            </div>
+
+            <button id="installApp" class="install-btn" hidden>
+                <i class="fas fa-mobile-screen"></i>
+                <div>
+                    <strong>Instalar app</strong>
+                    <small>Acesso rápido na tela inicial</small>
+                </div>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ============ MAIN ============ -->
+    <main class="main">
+
+        <!-- Top bar (mobile) -->
+        <div class="topbar">
+            <button id="menuToggle" class="icon-btn" aria-label="Abrir menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="topbar-brand">
+                <i class="fas fa-basket-shopping"></i>
+                <span>SmartList</span>
+            </div>
+            <button id="themeToggleMobile" class="icon-btn" aria-label="Alternar tema">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+
+        <div class="main-inner">
+
+            <!-- Hero / Form -->
+            <section class="hero-card">
+                <div class="hero-glow"></div>
+
+                <header class="hero-header">
+                    <div>
+                        <h2><i class="fas fa-plus-circle"></i> Adicionar produto</h2>
+                        <p>Cadastre um novo item na sua lista de compras</p>
+                    </div>
+                    <button id="voiceInput" class="voice-btn" title="Adicionar por voz (V)" aria-label="Comando de voz">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </header>
+
+                <form id="productForm" class="product-form" autocomplete="off">
+                    <div class="form-group form-group-name">
+                        <label for="productName">
+                            <i class="fas fa-tag"></i> Produto
+                        </label>
+                        <input
+                            type="text"
+                            id="productName"
+                            placeholder="Ex: Arroz Integral"
+                            required
+                            maxlength="60"
+                            list="suggestionsList">
+                        <datalist id="suggestionsList"></datalist>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productCategory">
+                            <i class="fas fa-layer-group"></i> Categoria
+                        </label>
+                        <select id="productCategory" required>
+                            <option value="Mercado">Mercado</option>
+                            <option value="Farmácia">Farmácia</option>
+                            <option value="Padaria">Padaria</option>
+                            <option value="Açougue">Açougue</option>
+                            <option value="Hortifruti">Hortifruti</option>
+                            <option value="Limpeza">Limpeza</option>
+                            <option value="Higiene">Higiene</option>
+                            <option value="Bebidas">Bebidas</option>
+                            <option value="Congelados">Congelados</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group form-group-small">
+                        <label for="productQuantity">
+                            <i class="fas fa-hashtag"></i> Qtd
+                        </label>
+                        <input type="number" id="productQuantity" min="1" max="999" value="1" required>
+                    </div>
+
+                    <div class="form-group form-group-small">
+                        <label for="productPrice">
+                            <i class="fas fa-dollar-sign"></i> Preço (un)
+                        </label>
+                        <input type="number" id="productPrice" min="0" step="0.01" placeholder="0,00">
+                    </div>
+
+                    <div class="form-group form-group-priority">
+                        <label for="productPriority">
+                            <i class="fas fa-flag"></i> Prioridade
+                        </label>
+                        <select id="productPriority">
+                            <option value="normal">Normal</option>
+                            <option value="alta">Alta</option>
+                            <option value="baixa">Baixa</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-add">
+                        <i class="fas fa-plus"></i>
+                        <span>Adicionar</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- Controls -->
+            <section class="controls-card">
+                <div class="search-box">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Pesquisar produtos... (Ctrl+K)"
+                        autocomplete="off">
+                    <button id="clearSearch" class="clear-search" title="Limpar" aria-label="Limpar busca">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="filter-pills">
+                    <button class="pill pill-active" data-filter="all">
+                        <i class="fas fa-list"></i> Todos
+                    </button>
+                    <button class="pill" data-filter="pending">
+                        <i class="far fa-circle"></i> Pendentes
+                    </button>
+                    <button class="pill" data-filter="purchased">
+                        <i class="fas fa-circle-check"></i> Comprados
+                    </button>
+                    <button class="pill" data-filter="high">
+                        <i class="fas fa-fire"></i> Alta prioridade
+                    </button>
+                </div>
+
+                <div class="extra-controls">
+                    <select id="filterCategory" title="Filtrar por categoria">
+                        <option value="all">Todas as categorias</option>
+                    </select>
+
+                    <select id="sortOrder" title="Ordenar por">
+                        <option value="recent">Mais recentes</option>
+                        <option value="oldest">Mais antigos</option>
+                        <option value="category">Categoria</option>
+                        <option value="name">Nome (A-Z)</option>
+                        <option value="priority">Prioridade</option>
+                        <option value="price">Preço (maior)</option>
+                    </select>
+                </div>
+
+                <div class="action-group">
+                    <button id="exportPdf" class="btn btn-ghost" title="Exportar PDF">
+                        <i class="fas fa-file-pdf"></i>
+                    </button>
+                    <button id="exportJson" class="btn btn-ghost" title="Exportar JSON">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button id="importJson" class="btn btn-ghost" title="Importar JSON">
+                        <i class="fas fa-upload"></i>
+                    </button>
+                    <button id="printList" class="btn btn-ghost" title="Imprimir">
+                        <i class="fas fa-print"></i>
+                    </button>
+                    <button id="clearAll" class="btn btn-ghost btn-ghost-danger" title="Limpar lista">
+                        <i class="fas fa-trash-can"></i>
+                    </button>
+                    <input type="file" id="importFile" accept="application/json" hidden>
+                </div>
+            </section>
+
+            <!-- Bulk action bar -->
+            <div id="bulkBar" class="bulk-bar">
+                <div class="bulk-info">
+                    <i class="fas fa-check-double"></i>
+                    <span id="bulkCount">Nenhum selecionado</span>
+                </div>
+                <div class="bulk-actions">
+                    <button id="bulkMarkPurchased" class="btn btn-sm btn-success">
+                        <i class="fas fa-check"></i> Marcar comprados
+                    </button>
+                    <button id="bulkMarkPending" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-undo"></i> Desmarcar
+                    </button>
+                    <button id="bulkDelete" class="btn btn-sm btn-danger">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                    <button id="bulkCancel" class="btn btn-sm btn-ghost">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- List -->
+            <section class="list-card">
+                <div class="list-card-header">
+                    <h2>
+                        <i class="fas fa-list-check"></i>
+                        Meus itens
+                        <span class="badge-count" id="visibleCount">0</span>
+                    </h2>
+                    <div class="list-total">
+                        <i class="fas fa-receipt"></i>
+                        <span>Total estimado:</span>
+                        <strong id="totalCost">R$ 0,00</strong>
+                    </div>
+                </div>
+
+                <ul id="productList" class="product-list" aria-live="polite"></ul>
+
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-illustration">
+                        <i class="fas fa-cart-arrow-down"></i>
+                    </div>
+                    <h3>Sua lista está vazia</h3>
+                    <p>Adicione produtos no formulário acima para começar.</p>
+                </div>
+            </section>
+
+        </div>
+
+        <button id="fab" class="fab" title="Adicionar (N)" aria-label="Adicionar item">
+            <i class="fas fa-plus"></i>
+        </button>
+    </main>
+
+    <!-- ============ OVERLAYS ============ -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- Confirm modal -->
+    <div id="confirmModal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-icon-wrap modal-warning">
+                <i class="fas fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="modalTitle">Confirmar ação</h3>
+            <p id="modalMessage">Tem certeza?</p>
+            <div class="modal-actions">
+                <button id="modalCancel" class="btn btn-secondary">Cancelar</button>
+                <button id="modalConfirm" class="btn btn-danger">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit modal -->
+    <div id="editModal" class="modal" aria-hidden="true">
+        <div class="modal-content modal-content-form">
+            <div class="modal-icon-wrap modal-primary">
+                <i class="fas fa-pen"></i>
+            </div>
+            <h3>Editar produto</h3>
+            <form id="editForm" class="edit-form">
+                <div class="form-group">
+                    <label for="editName">Produto</label>
+                    <input type="text" id="editName" required maxlength="60">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editCategory">Categoria</label>
+                        <select id="editCategory" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editQuantity">Quantidade</label>
+                        <input type="number" id="editQuantity" min="1" max="999" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editPrice">Preço unitário (R$)</label>
+                        <input type="number" id="editPrice" min="0" step="0.01" placeholder="0,00">
+                    </div>
+                    <div class="form-group">
+                        <label for="editPriority">Prioridade</label>
+                        <select id="editPriority">
+                            <option value="normal">Normal</option>
+                            <option value="alta">Alta</option>
+                            <option value="baixa">Baixa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="editCancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Budget modal -->
+    <div id="budgetModal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-icon-wrap modal-primary">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <h3>Definir orçamento</h3>
+            <p>Quanto você pretende gastar nesta lista?</p>
+            <form id="budgetForm">
+                <div class="form-group">
+                    <label for="budgetInput">Limite (R$)</label>
+                    <input type="number" id="budgetInput" min="0" step="0.01" placeholder="0,00">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="budgetClear" class="btn btn-ghost">Remover</button>
+                    <button type="button" id="budgetCancel" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Shortcuts modal -->
+    <div id="shortcutsModal" class="modal" aria-hidden="true">
+        <div class="modal-content modal-shortcuts">
+            <div class="modal-icon-wrap modal-primary">
+                <i class="fas fa-keyboard"></i>
+            </div>
+            <h3>Atalhos de teclado</h3>
+            <ul class="shortcut-list">
+                <li><kbd>N</kbd><span>Focar no campo de produto</span></li>
+                <li><kbd>Ctrl</kbd> + <kbd>K</kbd><span>Focar na busca</span></li>
+                <li><kbd>V</kbd><span>Adicionar por comando de voz</span></li>
+                <li><kbd>T</kbd><span>Alternar tema claro/escuro</span></li>
+                <li><kbd>P</kbd><span>Exportar lista em PDF</span></li>
+                <li><kbd>?</kbd><span>Mostrar esta tela de atalhos</span></li>
+                <li><kbd>Esc</kbd><span>Fechar modal ou limpar busca</span></li>
+            </ul>
+            <div class="modal-actions">
+                <button id="shortcutsClose" class="btn btn-primary">Entendi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti canvas -->
+    <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+
+    <!-- Indicador de offline -->
+    <div id="offlineBanner" class="offline-banner" hidden>
+        <i class="fas fa-wifi-slash"></i> Você está offline. As alterações ficam salvas no aparelho.
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Registra o Service Worker para suporte offline / PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(() => console.log('[PWA] Service Worker registrado'))
+                    .catch(err => console.warn('[PWA] Erro ao registrar SW:', err));
+            });
+        }
+    </script>
+</body>
+</html>
